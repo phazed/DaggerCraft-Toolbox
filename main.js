@@ -106,12 +106,15 @@ async function loadTools() {
   forceToolUiRefresh();
   selectHexStockerIfNeeded();
 
-  // Optional cloud save module. If it breaks or is missing, normal tools still load.
-  try {
-    await import("./cloud-ui.js");
-    console.log("[Vrahune Toolbox] Cloud UI loaded");
-  } catch (err) {
-    console.warn("[Vrahune Toolbox] Cloud UI disabled or failed to load:", err);
+  // The web version can optionally use Supabase. The desktop version is fully
+  // local and never attempts a network request.
+  if (!window.DAGGERCRAFT_DESKTOP) {
+    try {
+      await import("./cloud-ui.js");
+      console.log("[Vrahune Toolbox] Cloud UI loaded");
+    } catch (err) {
+      console.warn("[Vrahune Toolbox] Cloud UI disabled or failed to load:", err);
+    }
   }
 }
 
