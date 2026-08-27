@@ -167,7 +167,7 @@
     buildLauncher(r);applyRootClasses(r);tuneOriginalInputs(r);updateLauncher(r);addMethodNote(r);addSaveBar(r);
   }
 
-  function scheduleDecorate(){if(decorateScheduled)return;decorateScheduled=true;requestAnimationFrame(()=>{decorateScheduled=false;decorate();});}
+  function scheduleDecorate(){if(decorateScheduled)return;decorateScheduled=true;requestAnimationFrame(()=>{decorateScheduled=false;const panel=document.getElementById("generatorPanel");observer?.disconnect();decorate();if(panel)observer?.observe(panel,{childList:true,subtree:true});});}
   function watch(){const panel=document.getElementById("generatorPanel");if(!panel)return;observer?.disconnect();observer=new MutationObserver(scheduleDecorate);observer.observe(panel,{childList:true,subtree:true});scheduleDecorate();}
 
   function init(){injectStyles();watch();}
