@@ -17,4 +17,5 @@ try {
 }
 
 await loadClassicScript("./app.js");
+await loadClassicScript("./generator-editor-v2.js");
 await import("./main.js");
