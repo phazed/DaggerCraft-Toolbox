@@ -34,6 +34,9 @@ jobs:
       - name: Test autosave bridge
         run: npm test
 
+      - name: Prepare desktop assets
+        run: npm run prepare:desktop
+
       - name: Test native recovery storage
         run: cargo test --manifest-path src-tauri/Cargo.toml --lib
 
