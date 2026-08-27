@@ -1,6 +1,6 @@
 use serde_json::{json, Value};
 use std::{
-    fs::{self, File, OpenOptions},
+    fs::{self, OpenOptions},
     io::Write,
     path::{Path, PathBuf},
     process::Command,
@@ -193,7 +193,10 @@ fn write_bundle_safely(paths: &DataPaths, bundle: &Value) -> Result<(), String> 
         return Err(format!("Unable to activate the new save file: {error}"));
     }
 
-    File::open(&paths.data_file)
+    OpenOptions::new()
+        .read(true)
+        .write(true)
+        .open(&paths.data_file)
         .and_then(|file| file.sync_all())
         .map_err(|error| format!("Unable to verify the saved data: {error}"))
 }
