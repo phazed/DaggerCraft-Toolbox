@@ -44,13 +44,13 @@
   function uid(prefix="id") { return `${prefix}_${Math.random().toString(36).slice(2,8)}_${Date.now().toString(36)}`; }
 
   function defaultExtra() {
-    return { version:1, startedAt:Date.now(), combatants:{}, log:[] };
+    return { version:1, startedAt:0, combatants:{}, log:[] };
   }
 
   function normalizeExtra(raw) {
     const base=defaultExtra();
     if(!raw||typeof raw!=="object")return base;
-    base.startedAt=Number(raw.startedAt)||Date.now();
+    base.startedAt=Number(raw.startedAt)||0;
     base.combatants=raw.combatants&&typeof raw.combatants==="object"?raw.combatants:{};
     base.log=Array.isArray(raw.log)?raw.log.slice(-250):[];
     return base;
@@ -250,7 +250,7 @@
 
   function renderFeature(a,combatantId,index,prefix="") {
     const name=String(a?.name||"Action");const text=String(a?.text||a?.description||"");const bonus=attackBonus(text);const dmg=damageExpr(text);const recharge=rechargeRange(a);const key=`${prefix}${name}`;const ex=extraFor(combatantId);const rechargeState=ex.recharge[key]||null;
-    return `<div class="enc-feature"><div class="enc-feature-name">${prefix?`${esc(prefix)} · `:""}${esc(name)}${recharge?` <span style="color:${rechargeState?.ready===false?"#d17a7a":"#91c47c"}">· ${rechargeState?.ready===false?"Spent":"Ready"}</span>`:""}</div><div class="enc-feature-text">${esc(text)}</div><div class="enc-action-buttons">${bonus!=null?`<button class="enc-mini" data-roll-attack="${esc(combatantId)}" data-bonus="${bonus}" data-action-name="${esc(name)}">Attack ${bonus>=0?"+":""}${bonus}</button>`:""}${dmg?`<button class="enc-mini" data-roll-damage="${esc(combatantId)}" data-dice="${esc(dmg)}" data-action-name="${esc(name)}">Damage ${esc(dmg)}</button>`:""}${recharge?`<button class="enc-mini" data-roll-recharge="${esc(combatantId)}" data-recharge-key="${esc(key)}" data-min="${recharge.min}" data-max="${recharge.max}">Roll Recharge</button>`:""}</div></div>`;
+    return `<div class="enc-feature"><div class="enc-feature-name">${prefix?`${esc(prefix)} · `:""}${esc(name)}${recharge?` <span style="color:${rechargeState?.ready===false?"#d17a7a":"#91c47c"}">· ${rechargeState?.ready===false?"Spent":"Ready"}</span>`:""}</div><div class="enc-feature-text">${esc(text)}</div><div class="enc-action-buttons">${bonus!=null?`<button class="enc-mini" data-roll-attack="${esc(combatantId)}" data-bonus="${bonus}" data-action-name="${esc(name)}">Attack ${bonus>=0?"+":""}${bonus}</button>`:""}${dmg?`<button class="enc-mini" data-roll-damage="${esc(combatantId)}" data-dice="${esc(dmg)}" data-action-name="${esc(name)}">Damage ${esc(dmg)}</button>`:""}${recharge?`<button class="enc-mini ${rechargeState?.ready===false?"warn on":""}" data-toggle-recharge="${esc(combatantId)}" data-recharge-key="${esc(key)}">${rechargeState?.ready===false?"Mark Ready":"Mark Used"}</button><button class="enc-mini" data-roll-recharge="${esc(combatantId)}" data-recharge-key="${esc(key)}" data-min="${recharge.min}" data-max="${recharge.max}">Roll Recharge</button>`:""}</div></div>`;
   }
 
   function renderTools(state,active) {
@@ -320,6 +320,7 @@
     if(btn.dataset.exhaustionMinus){const state=encounterState();const c=findCombatant(state,btn.dataset.exhaustionMinus);if(!c)return;c.exhaustionLevel=clamp(intOr(c.exhaustionLevel,0)-1,0,6);commit(state,`${c.name}: exhaustion ${c.exhaustionLevel}`);return;}
     if(btn.dataset.rollAttack){rollAttack(btn.dataset.rollAttack,Number(btn.dataset.bonus),btn.dataset.actionName||"Attack");return;}
     if(btn.dataset.rollDamage){rollDamage(btn.dataset.rollDamage,btn.dataset.dice,btn.dataset.actionName||"Damage");return;}
+    if(btn.dataset.toggleRecharge){const id=btn.dataset.toggleRecharge;const state=encounterState();const c=findCombatant(state,id);if(!c)return;const ex=extraFor(id);const key=btn.dataset.rechargeKey;const current=ex.recharge[key]?.ready;ex.recharge[key]={...(ex.recharge[key]||{}),ready:current===false};saveExtra();logEvent(state,`${c.name} · ${key}: ${ex.recharge[key].ready?"ready":"used"}`);renderCombatMode();return;}
     if(btn.dataset.rollRecharge){rollRecharge(btn.dataset.rollRecharge,btn.dataset.rechargeKey,Number(btn.dataset.min),Number(btn.dataset.max));return;}
   }
 
