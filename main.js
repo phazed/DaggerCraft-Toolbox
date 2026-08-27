@@ -15,9 +15,11 @@ const TOOL_MODULES = [
 const ENHANCEMENT_MODULES = [
   "./tool-app-shell-v2.js",
   "./tool-monster-vault-enhancements.js",
+  "./tool-monster-vault-layout-v2.js",
   "./tool-encounter-combat-mode.js",
   "./tool-importer-wizard.js",
-  "./tool-importer-auto-review.js"
+  "./tool-importer-auto-review.js",
+  "./tool-importer-markdown-parser-v2.js"
 ];
 
 async function loadToolModule(path) {
