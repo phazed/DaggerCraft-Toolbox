@@ -16,6 +16,7 @@ const frontendFiles = rootEntries
       entry.name === "main.js" ||
       entry.name === "desktop-bootstrap.js" ||
       entry.name === "desktop-storage.js" ||
+      entry.name === "generator-editor-v2.js" ||
       entry.name === "cloud-save.js" ||
       entry.name === "cloud-ui.js" ||
       entry.name === "supabase-client.js" ||
