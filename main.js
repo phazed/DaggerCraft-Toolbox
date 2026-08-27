@@ -19,7 +19,8 @@ const ENHANCEMENT_MODULES = [
   "./tool-encounter-combat-mode.js",
   "./tool-importer-wizard.js",
   "./tool-importer-auto-review.js",
-  "./tool-importer-markdown-parser-v2.js"
+  "./tool-importer-markdown-parser-v2.js",
+  "./tool-importer-workflow-fix.js"
 ];
 
 async function loadToolModule(path) {
