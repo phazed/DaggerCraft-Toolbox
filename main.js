@@ -1,6 +1,6 @@
 // main.js – ES module entry for tools
-// Each tool file calls window.registerTool(...) when loaded.
-// app.js is included as a classic script in index.html and defines registerTool.
+// Each core tool file calls window.registerTool(...) when loaded.
+// Enhancement modules load afterward and add UI/workflow layers without replacing tool storage.
 
 const TOOL_MODULES = [
   "./tool-monster-vault.js",
@@ -12,6 +12,28 @@ const TOOL_MODULES = [
   "./tool-hex-stocker.js"
 ];
 
+const ENHANCEMENT_MODULES = [
+  "./tool-app-shell-v2.js",
+  "./tool-monster-vault-enhancements.js",
+  "./tool-monster-vault-layout-v2.js",
+  "./tool-encounter-combat-mode.js",
+  "./tool-importer-wizard.js",
+  "./tool-importer-auto-review.js",
+  "./tool-importer-markdown-parser-v2.js",
+  "./tool-importer-workflow-fix.js",
+  "./tool-lexicon-ui-v2.js",
+  "./tool-lexicon-intelligence-v2.js",
+  "./tool-lexicon-polish-v1.js",
+  "./tool-dm-screen-v2.js",
+  "./tool-notes-v1.js",
+  "./tool-dm-screen-polish-v1.js",
+  "./tool-notes-polish-v2.js",
+  "./tool-dm-screen-polish-v2.js",
+  "./tool-notes-final-v3.js",
+  "./tool-dm-rules-final-v3.js",
+  "./tool-dm-initiative-v1.js"
+];
+
 async function loadToolModule(path) {
   try {
     await import(path);
@@ -19,10 +41,6 @@ async function loadToolModule(path) {
   } catch (err) {
     console.error("[Vrahune Toolbox] Failed to load " + path, err);
   }
-}
-
-function textIncludes(el, text) {
-  return (el.textContent || "").toLowerCase().includes(text.toLowerCase());
 }
 
 function pageLooksUnselected() {
@@ -46,7 +64,6 @@ function findClickableToolByName(name) {
 }
 
 function forceToolUiRefresh() {
-  // Try common app refresh hooks, if your app exposes any.
   const possibleRefreshFns = [
     "renderTools",
     "renderToolNav",
@@ -67,12 +84,10 @@ function forceToolUiRefresh() {
     }
   }
 
-  // Some layouts update on resize.
   window.dispatchEvent(new Event("resize"));
 }
 
 function selectHexStockerIfNeeded() {
-  // Wait a tiny bit so app.js has time to render the tool nav after imports.
   window.setTimeout(() => {
     forceToolUiRefresh();
 
@@ -83,8 +98,6 @@ function selectHexStockerIfNeeded() {
       return;
     }
 
-    // Only auto-click Hex Stocker if the page is stuck on the empty selection state.
-    // This prevents stealing focus when another tool is already selected.
     if (pageLooksUnselected()) {
       console.log("[Vrahune Toolbox] Auto-selecting Hex Stocker after tool load");
       hexButton.click();
@@ -99,20 +112,21 @@ async function loadTools() {
     );
   }
 
+  // Load stable tool implementations first.
   for (const path of TOOL_MODULES) {
+    await loadToolModule(path);
+  }
+
+  // Then layer on navigation/workflow enhancements that rely on those tool APIs.
+  for (const path of ENHANCEMENT_MODULES) {
     await loadToolModule(path);
   }
 
   forceToolUiRefresh();
   selectHexStockerIfNeeded();
 
-  // Optional cloud save module. If it breaks or is missing, normal tools still load.
-  try {
-    await import("./cloud-ui.js");
-    console.log("[Vrahune Toolbox] Cloud UI loaded");
-  } catch (err) {
-    console.warn("[Vrahune Toolbox] Cloud UI disabled or failed to load:", err);
-  }
+  // Cloud login is intentionally not loaded here. The desktop app is local-first,
+  // and the browser edition keeps local data/export controls without requiring a backend.
 }
 
 loadTools();

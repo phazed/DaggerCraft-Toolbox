@@ -1015,11 +1015,8 @@
     </div>
   </div>
   
-<!-- Core app logic (generators, lexicons, UI) -->
-<script src="app.js"></script>
-
-<!-- Tools are ES modules, loaded via main.js -->
-<script type="module" src="main.js"></script>
+<!-- Restores durable desktop data before loading the shared web app. -->
+<script type="module" src="desktop-bootstrap.js"></script>
 
  
 </body>

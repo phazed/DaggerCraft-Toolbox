@@ -17,7 +17,8 @@ const DB_BUNDLE_KEYS = [
   FOLDER_STATE_KEY,
   "vrahuneEncounterToolStateV7",
   "vrahuneMonsterVaultStateV2",
-  "vrahuneStatblockImporterDraftsV3"
+  "vrahuneStatblockImporterDraftsV3",
+  "daggerCraftHexStockerStateV1"
 ];
 
 let publishedDbBundle = null;
@@ -2575,7 +2576,7 @@ window.renderToolPanel = renderToolPanel;
 window.renderToolsNav = renderToolsNav;
 
 
-document.addEventListener("DOMContentLoaded", () => {
+function initializeAppUi() {
   document
     .getElementById("generatorNav")
     .addEventListener("click", handleNavClick);
@@ -2663,4 +2664,10 @@ if (resetPublishedBtn) {
   }
 
   initApp();
-});
+}
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initializeAppUi, { once: true });
+} else {
+  initializeAppUi();
+}

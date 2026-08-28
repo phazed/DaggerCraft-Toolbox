@@ -9,8 +9,8 @@ const DB_BUNDLE_KEYS = [
   "vrahuneFolderStateV1",
   "vrahuneEncounterToolStateV7",
   "vrahuneMonsterVaultStateV2",
-  "vrahuneStatblockImporterDraftsV3"
-   "daggerCraftHexStockerStateV1"
+  "vrahuneStatblockImporterDraftsV3",
+  "daggerCraftHexStockerStateV1"
 ];
 
 function safeReadLocalJson(key) {

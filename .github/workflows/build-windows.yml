@@ -1,0 +1,66 @@
+name: Build Windows app
+
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  windows:
+    name: Windows installer
+    runs-on: windows-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v5
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install JavaScript dependencies
+        run: npm ci
+
+      - name: Check frontend JavaScript syntax
+        shell: pwsh
+        run: Get-ChildItem -Path . -Filter '*.js' -File | ForEach-Object { node --check $_.FullName }
+
+      - name: Test autosave bridge
+        run: npm test
+
+      - name: Prepare desktop assets
+        run: npm run prepare:desktop
+
+      - name: Test native recovery storage
+        run: cargo test --manifest-path src-tauri/Cargo.toml --lib
+
+      - name: Build DaggerCraft Toolbox
+        run: npm run desktop:build
+
+      - name: Upload Windows installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: DaggerCraft-Toolbox-Windows
+          path: src-tauri/target/release/bundle/nsis/*-setup.exe
+          if-no-files-found: error
+
+      - name: Publish tagged release
+        if: startsWith(github.ref, 'refs/tags/')
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: >-
+          gh release create "${{ github.ref_name }}"
+          src-tauri/target/release/bundle/nsis/*-setup.exe
+          --title "DaggerCraft Toolbox ${{ github.ref_name }}"
+          --generate-notes
