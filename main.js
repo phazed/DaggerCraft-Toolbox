@@ -24,7 +24,7 @@ const ENHANCEMENT_MODULES = [
   "./tool-lexicon-ui-v2.js",
   "./tool-lexicon-intelligence-v2.js",
   "./tool-lexicon-polish-v1.js",
-  "./tool-dm-screen-v1.js"
+  "./tool-dm-screen-v2.js"
 ];
 
 async function loadToolModule(path) {
