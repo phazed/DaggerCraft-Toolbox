@@ -31,6 +31,10 @@ jobs:
       - name: Install JavaScript dependencies
         run: npm ci
 
+      - name: Check frontend JavaScript syntax
+        shell: pwsh
+        run: Get-ChildItem -Path . -Filter '*.js' -File | ForEach-Object { node --check $_.FullName }
+
       - name: Test autosave bridge
         run: npm test
 
