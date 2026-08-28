@@ -28,7 +28,10 @@ const ENHANCEMENT_MODULES = [
   "./tool-notes-v1.js",
   "./tool-dm-screen-polish-v1.js",
   "./tool-notes-polish-v2.js",
-  "./tool-dm-screen-polish-v2.js"
+  "./tool-dm-screen-polish-v2.js",
+  "./tool-notes-final-v3.js",
+  "./tool-dm-rules-final-v3.js",
+  "./tool-dm-initiative-v1.js"
 ];
 
 async function loadToolModule(path) {
