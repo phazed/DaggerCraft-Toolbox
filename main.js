@@ -23,7 +23,8 @@ const ENHANCEMENT_MODULES = [
   "./tool-importer-workflow-fix.js",
   "./tool-lexicon-ui-v2.js",
   "./tool-lexicon-intelligence-v2.js",
-  "./tool-lexicon-polish-v1.js"
+  "./tool-lexicon-polish-v1.js",
+  "./tool-dm-screen-v1.js"
 ];
 
 async function loadToolModule(path) {
