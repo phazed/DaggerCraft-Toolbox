@@ -155,6 +155,38 @@
     return { removed: true, target };
   }
 
+  function refreshOpenAnalysisModal(genId) {
+    const analysisBox = document.getElementById("lexAnalysisBox");
+    if (!analysisBox || analysisBox.style.display === "none") return;
+
+    // v2 owns rendering this modal. Close it without user-visible delay, then invoke
+    // the normal Language Analysis button so v2 reloads the lexicon from storage.
+    analysisBox.style.display = "none";
+
+    const reopen = () => {
+      const button = document.getElementById("lexOpenAnalysis");
+      if (button) {
+        button.click();
+        return true;
+      }
+      return false;
+    };
+
+    if (reopen()) return;
+
+    // If the main panel is in the middle of re-rendering, give the Smart Lexicon
+    // toolbar a couple of frames to come back, then reopen the analysis view.
+    requestAnimationFrame(() => {
+      if (reopen()) return;
+      requestAnimationFrame(() => {
+        if (!reopen()) {
+          // Fallback: keep the modal visible rather than leaving it unexpectedly closed.
+          analysisBox.style.display = "flex";
+        }
+      });
+    });
+  }
+
   function deleteSelectedWord() {
     if (!selectedGeneratorId || !selectedWordKey) return;
     const gens = loadGenerators();
@@ -168,6 +200,7 @@
     const ok = window.confirm(`Delete “${target.english} = ${target.valathi}” from ${language}?\n\nThis removes the word and its Smart Lexicon metadata. This cannot be undone.`);
     if (!ok) return;
 
+    const deletedGeneratorId = selectedGeneratorId;
     const result = removeWordAndMetadata(gens[idx], selectedWordKey);
     if (!result.removed) return;
     saveGenerators(gens);
@@ -177,15 +210,14 @@
     const details = document.getElementById("lexWordDetailsBox");
     if (details) details.style.display = "none";
 
-    // Re-open the active lexicon so the dictionary count/list refreshes immediately.
+    // Re-render the normal lexicon panel/count if the host exposes its renderer.
     if (typeof window.renderMainPanel === "function") {
       try { window.renderMainPanel(); } catch {}
     }
-    const active = activeLexicon();
-    if (active) {
-      const candidate = document.querySelector(`[data-id="${CSS.escape(active.id)}"]`);
-      if (candidate) candidate.click();
-    }
+
+    // Most importantly, refresh the already-open Language Analysis modal immediately.
+    // Previously it stayed stale until the user closed and reopened it manually.
+    refreshOpenAnalysisModal(deletedGeneratorId);
 
     window.alert(`Removed “${result.target.english} = ${result.target.valathi}”.`);
   }
